@@ -1,39 +1,30 @@
-module Days.Day01 (runDay) where
+module Days.Day01 where
 
-{- ORMOLU_DISABLE -}
-import Data.List
-import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
-import Data.Maybe
-import Data.Set (Set)
-import qualified Data.Set as Set
-import Data.Vector (Vector)
-import qualified Data.Vector as Vec
-import qualified Util.Util as U
-
-import qualified Program.RunDay as R (runDay)
-import Data.Attoparsec.Text
-import Data.Void
-{- ORMOLU_ENABLE -}
+import           Control.Applicative  ( (<|>) )
+import           Data.Maybe           ( listToMaybe )
+import qualified Program.RunDay as R  ( runDay )
+import           Data.Attoparsec.Text
 
 runDay :: Bool -> String -> IO ()
 runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = error "Not implemented yet!"
+inputParser = many' (decimal <* (endOfLine <|> endOfInput))
 
 ------------ TYPES ------------
-type Input = Void
+type Input = [Int]
 
-type OutputA = Void
+type OutputA = Maybe Int
 
-type OutputB = Void
+type OutputB = Maybe Int
 
 ------------ PART A ------------
 partA :: Input -> OutputA
-partA = error "Not implemented yet!"
+partA input =
+  listToMaybe [x*y | x <- input, y <- input, x+y == 2020]
 
 ------------ PART B ------------
 partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+partB input =
+  listToMaybe [x*y*z | x <- input, y <- input, z <- input, x+y+z == 2020]

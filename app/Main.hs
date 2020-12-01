@@ -33,7 +33,7 @@ import qualified Days.Day25 as Day25 (runDay)
 import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Maybe (fromMaybe)
-import Options.Applicative
+import Options.Applicative hiding (action)
 import Text.Printf (printf)
 
 data Days
@@ -122,8 +122,8 @@ performDay (Options d v) = case d of
   AllDays ->
     sequence_ $
       fmap
-        ( \(d, (a, i)) -> do
-            putStrLn $ "\n***Day " ++ (printf "%02d" d) ++ "***"
+        ( \(day, (a, i)) -> do
+            putStrLn $ "\n***Day " ++ (printf "%02d" day) ++ "***"
             a v i
         )
         (Map.toList days)
