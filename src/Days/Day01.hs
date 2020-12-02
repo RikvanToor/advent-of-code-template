@@ -1,4 +1,4 @@
-module Days.Day01 where
+module Days.Day01 (runDay) where
 
 import           Control.Applicative  ( (<|>) )
 import           Data.Maybe           ( listToMaybe )

@@ -1,39 +1,56 @@
-module Days.Day02 (runDay) where
+module Days.Day02 where
 
-{- ORMOLU_DISABLE -}
-import Data.List
-import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
-import Data.Maybe
-import Data.Set (Set)
-import qualified Data.Set as Set
-import Data.Vector (Vector)
-import qualified Data.Vector as Vec
-import qualified Util.Util as U
-
-import qualified Program.RunDay as R (runDay)
-import Data.Attoparsec.Text
-import Data.Void
-{- ORMOLU_ENABLE -}
+import           Control.Applicative  ( (<|>) )
+import qualified Program.RunDay as R  ( runDay )
+import           Data.Attoparsec.Text
 
 runDay :: Bool -> String -> IO ()
 runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = error "Not implemented yet!"
+inputParser = many'
+  $ Password
+  <$> decimal
+  <* char '-'
+  <*> decimal
+  <* space
+  <*> anyChar
+  <* char ':'
+  <* space
+  <*> manyTill anyChar (endOfLine <|> endOfInput)
 
 ------------ TYPES ------------
-type Input = Void
+type Input = [Password]
 
-type OutputA = Void
+data Password = Password
+  { pwMin      :: Int
+  , pwMax      :: Int
+  , pwChar     :: Char
+  , pwPassword :: String
+  } deriving Show
 
-type OutputB = Void
+type OutputA = Int
+
+type OutputB = Int
 
 ------------ PART A ------------
+count' :: Foldable t => (a -> Bool) -> t a -> Int
+count' f = foldr (\a b -> if f a then b + 1 else b) 0
+
 partA :: Input -> OutputA
-partA = error "Not implemented yet!"
+partA = count'
+  (\Password{..} ->
+    let charCount = length (filter (== pwChar) pwPassword)
+    in charCount >= pwMin && charCount <= pwMax
+  )
 
 ------------ PART B ------------
 partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+partB = count'
+  (\Password{..} ->
+    let l      = length pwPassword
+        valid1 = pwMin <= l && pwPassword !! (pwMin-1) == pwChar
+        valid2 = pwMax <= l && pwPassword !! (pwMax-1) == pwChar
+    in (valid1 && not valid2) || (valid2 && not valid1)
+  )
