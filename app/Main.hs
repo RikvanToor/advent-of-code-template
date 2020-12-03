@@ -131,10 +131,10 @@ performDay (Options d v) = case d of
     let action = (validate day >>= (days Map.!?))
      in case action of
           Nothing -> putStrLn "Invalid day provided. There are 25 days in Advent."
-          Just (d, i) -> do
+          Just (d', i) -> do
             let i' = fromMaybe i input
             putStrLn $ "\n***Day " ++ (printf "%02d" day) ++ "***"
-            d v i'
+            d' v i'
             putStrLn "************"
 
 main :: IO ()

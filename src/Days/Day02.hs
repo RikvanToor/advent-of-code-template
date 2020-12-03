@@ -1,4 +1,4 @@
-module Days.Day02 where
+module Days.Day02 (runDay) where
 
 import           Control.Applicative  ( (<|>) )
 import qualified Program.RunDay as R  ( runDay )
