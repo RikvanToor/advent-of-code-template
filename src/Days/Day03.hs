@@ -1,12 +1,12 @@
-module Days.Day03 where
+module Days.Day03 (runDay) where
 
 import           Control.Monad        ( liftM2 )
 import           Control.Applicative  ( (<|>) )
-import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as M
+import           Data.Map.Strict      ( Map )
+import qualified Data.Map.Strict      as M
 
-import qualified Program.RunDay as R (runDay)
-import Data.Attoparsec.Text
+import qualified Program.RunDay       as R (runDay)
+import           Data.Attoparsec.Text
 
 runDay :: Bool -> String -> IO ()
 runDay = R.runDay inputParser partA partB
