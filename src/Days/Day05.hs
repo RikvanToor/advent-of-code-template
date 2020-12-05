@@ -1,39 +1,43 @@
 module Days.Day05 (runDay) where
 
-{- ORMOLU_DISABLE -}
-import Data.List
-import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
-import Data.Maybe
-import Data.Set (Set)
-import qualified Data.Set as Set
-import Data.Vector (Vector)
-import qualified Data.Vector as Vec
-import qualified Util.Util as U
-
-import qualified Program.RunDay as R (runDay)
-import Data.Attoparsec.Text
-import Data.Void
-{- ORMOLU_ENABLE -}
+import           Control.Applicative  ( (<|>) )
+import           Data.Maybe           ( listToMaybe )
+import qualified Program.RunDay as R  ( runDay )
+import           Data.Attoparsec.Text
 
 runDay :: Bool -> String -> IO ()
 runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = error "Not implemented yet!"
+inputParser =
+  let p1 = 0 <$ char 'F' <|> 1 <$ char 'B'
+      p2 = 0 <$ char 'L' <|> 1 <$ char 'R'
+      p  = bitsToInt <$> many' (p1 <|> p2)
+  in p `sepBy` space
+
+bitsToInt :: [Int] -> Int
+bitsToInt = foldl (\xs x -> x + 2 * xs) 0
 
 ------------ TYPES ------------
-type Input = Void
+type Input = [Int]
 
-type OutputA = Void
+data Pass = Pass [Bit] [Bit]
+  deriving Show
 
-type OutputB = Void
+data Bit = One | Zero
+  deriving Show
+
+type OutputA = Int
+
+type OutputB = Maybe Int
 
 ------------ PART A ------------
 partA :: Input -> OutputA
-partA = error "Not implemented yet!"
+partA = maximum
 
 ------------ PART B ------------
 partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+partB ids =
+  let allOpts = [minimum ids..maximum ids]
+  in listToMaybe $ filter (not . (`elem` ids)) allOpts
