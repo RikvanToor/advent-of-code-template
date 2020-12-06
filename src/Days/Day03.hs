@@ -1,24 +1,26 @@
 module Days.Day03 (runDay) where
 
 import           Control.Monad        ( liftM2 )
-import           Control.Applicative  ( (<|>) )
+import           Data.Bifunctor       ( bimap )
 import           Data.Map.Strict      ( Map )
 import qualified Data.Map.Strict      as M
 
 import qualified Program.RunDay       as R (runDay)
 import           Data.Attoparsec.Text
+import           Util.Util            ( mapParser )
 
 runDay :: Bool -> String -> IO ()
 runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser =
-  let row = M.fromList . zip [0..] <$> manyTill (Open <$ char '.' <|> Tree <$ char '#') (endOfLine <|> endOfInput)
-  in M.fromList . zip [0..] <$> manyTill row endOfInput
+inputParser = mapParser charToBlock
+  where charToBlock '.' = Open
+        charToBlock '#' = Tree
+        charToBlock _   = error "Unexpected character"
 
 ------------ TYPES ------------
-type Input = Map Int (Map Int Block)
+type Input = Map (Int, Int) Block
 
 data Block = Tree | Open
   deriving Show
@@ -34,19 +36,16 @@ countBlock Open = 0
 
 travMap :: Input -> (Int, Int) -> OutputA
 travMap i (dx, dy) = do
-  let pos     = (0, 0)
-  let maxY = maximum (M.keys i)
-  maxX <- maximum . M.keys <$> M.lookup 0 i
-
+  let (maxX, maxY) = bimap maximum maximum (unzip (M.keys i))
   let go :: (Int, Int) -> OutputA -> OutputA
       go (x,y) mRes
         | y > maxY = mRes
         | otherwise = do
           res <- mRes
-          block <- M.lookup y i >>= M.lookup (x `mod` (maxX+1))
+          block <- M.lookup (x `mod` (maxX+1), y) i
           go (x+dx, y+dy) (Just $ res + countBlock block)
   
-  go pos (Just 0)
+  go (0,0) (Just 0)
 
 partA :: Input -> OutputA
 partA i = travMap i (3, 1)
