@@ -55,5 +55,5 @@ partB is =
          $ Map.update (const (Just [])) "dotted black"
          $ Map.update (const (Just [(5, "faded blue"), (6, "dotted black")])) "vibrant plum"
          $ Map.update (const (Just [(3, "faded blue"), (4, "dotted black")])) "dark olive"
-         $ m
+         m
   in maybe 0 (\x -> length x - 1) $ mapToTree m' "shiny gold"

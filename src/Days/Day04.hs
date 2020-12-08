@@ -16,7 +16,7 @@ runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = (Map.fromList <$> many1 field) `sepBy` (endOfLine)
+inputParser = (Map.fromList <$> many1 field) `sepBy` endOfLine
   where field = (,) <$> many1 symb <* char ':' <*> many1 symb <* sp
         symb = letter <|> digit <|> char '#'
         sp   = () <$ char ' ' <|> endOfLine
