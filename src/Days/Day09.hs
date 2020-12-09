@@ -1,39 +1,52 @@
 module Days.Day09 (runDay) where
 
-{- ORMOLU_DISABLE -}
-import Data.List
-import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
-import Data.Maybe
-import Data.Set (Set)
-import qualified Data.Set as Set
-import Data.Vector (Vector)
-import qualified Data.Vector as Vec
-import qualified Util.Util as U
-
 import qualified Program.RunDay as R (runDay)
 import Data.Attoparsec.Text
-import Data.Void
-{- ORMOLU_ENABLE -}
 
 runDay :: Bool -> String -> IO ()
 runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = error "Not implemented yet!"
+inputParser = decimal `sepBy` space
 
 ------------ TYPES ------------
-type Input = Void
+type Input = [Int]
 
-type OutputA = Void
+type OutputA = Maybe Int
 
-type OutputB = Void
+type OutputB = Maybe Int
 
 ------------ PART A ------------
+findIncorrect :: [Int] -> [Int] -> Maybe Int
+findIncorrect _      []     = Nothing
+findIncorrect preAmb (x:xs) =
+  if null [(a,b) | a <- preAmb, b <- preAmb, a+b == x, a /= b]
+  then Just x
+  else findIncorrect (reverse $ (x:) $ reverse $ drop 1 preAmb) xs
+
 partA :: Input -> OutputA
-partA = error "Not implemented yet!"
+partA = uncurry findIncorrect . splitAt 25
 
 ------------ PART B ------------
+takeWhile' :: ([a] -> Bool) -> [a] -> [a]
+takeWhile' f = go []
+  where go buf []     = buf
+        go buf (x:xs) = let newBuf = buf ++ [x]
+                        in if f newBuf then go newBuf xs else buf 
+
+findSeq :: Int -> [Int] -> Maybe [Int]
+findSeq x xs =
+  let ans = takeWhile' ((<= x) . sum) xs
+  in if sum ans == x && length ans > 1
+     then Just ans
+     else case xs of
+       [] -> Nothing
+       (_:ys) -> findSeq x ys
+
+
 partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+partB i = do
+  inv <- partA i
+  s <- findSeq inv i
+  return (minimum s + maximum s)
