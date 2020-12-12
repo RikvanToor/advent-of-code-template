@@ -1,4 +1,4 @@
-module Days.Day10 where
+module Days.Day10 (runDay) where
 
 import Data.List  ( sortOn, sort )
 import Data.Maybe ( fromMaybe, listToMaybe )
