@@ -1,39 +1,53 @@
 module Days.Day13 (runDay) where
 
-{- ORMOLU_DISABLE -}
-import Data.List
-import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
-import Data.Maybe
-import Data.Set (Set)
-import qualified Data.Set as Set
-import Data.Vector (Vector)
-import qualified Data.Vector as Vec
-import qualified Util.Util as U
+import           Control.Applicative  ( (<|>) )
+import           Control.Monad        ( join )
+import           Data.List
+import           Data.Maybe
 
 import qualified Program.RunDay as R (runDay)
-import Data.Attoparsec.Text
-import Data.Void
-{- ORMOLU_ENABLE -}
+import           Data.Attoparsec.Text
 
 runDay :: Bool -> String -> IO ()
 runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = error "Not implemented yet!"
+inputParser = (,) <$> decimal <* space <*> (b `sepBy` char ',')
+  where b = Just <$> decimal <|> Nothing <$ char 'x'
 
 ------------ TYPES ------------
-type Input = Void
+type Input = (Int, [Maybe Int])
 
-type OutputA = Void
+type OutputA = Maybe Int
 
-type OutputB = Void
+type OutputB = Int
 
 ------------ PART A ------------
 partA :: Input -> OutputA
-partA = error "Not implemented yet!"
+partA (start, mbs) =
+  fmap (\(bid, time) -> bid * (time-start))
+  $ join
+  $ find isJust
+  $ map (\x -> listToMaybe
+      $ mapMaybe (\b -> if x `mod` b == 0 then Just (b,x) else Nothing ) bs)
+    [start..start+maxB]
+  where bs = catMaybes mbs
+        maxB = maximum bs
 
 ------------ PART B ------------
+findTime :: (Int, Int, Int) -> (Int, Int) -> (Int, Int, Int)
+findTime (offset, x, 0) (y, d)
+  = (, x*y, 0)
+  $ fromMaybe (error "No time found")
+  $ find ((== ((y-d) `mod` y)) . (`mod` y)) (map ((+offset) . (*x)) [0..])
+findTime _ _
+  = error "Haven't figured out how to do this, but it should not be necessary"
+
+
 partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+partB (_, mbs) = (\(x,_,_) -> x) $ foldr (flip findTime) (0,fst $ head bs,0) (reverse $ tail bs)
+  where bs = onlyJusts $ zip mbs [0..]
+        onlyJusts []               = []
+        onlyJusts ((Just x, y):xs) = (x,y) : onlyJusts xs
+        onlyJusts ((Nothing,_):xs) = onlyJusts xs
