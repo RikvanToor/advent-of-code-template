@@ -44,3 +44,15 @@ mapParser f =
     . concat
     . zipWith (\y -> map (\(x, c) -> ((x, y), c))) [0..]
     <$> manyTill row endOfInput
+
+fst3 :: (a,b,c) -> a
+fst3 (a,_,_) = a
+
+snd3 :: (a,b,c) -> b
+snd3 (_,b,_) = b
+
+trd3 :: (a,b,c) -> c
+trd3 (_,_,c) = c
+
+uncurry3 :: (a -> b -> c -> d) -> (a,b,c) -> d
+uncurry3 f (a,b,c) = f a b c
