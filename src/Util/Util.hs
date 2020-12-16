@@ -37,6 +37,9 @@ chunksOf n ls
   | length ls < n = [ls]
   | otherwise = (take n ls) : (chunksOf n (drop n ls))
 
+fix :: Eq a => (a -> a) -> a -> a
+fix f a = if a == f a then a else fix f (f a)
+
 mapParser :: (Char -> a) -> Parser (Map (Int, Int) a)
 mapParser f =
   let row = zip [0..] <$> manyTill (f <$> anyChar) (endOfLine <|> endOfInput)

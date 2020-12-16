@@ -55,11 +55,8 @@ step i = Map.mapWithKey go i
             Empty -> if nrOfTakens == 0 then Taken else Empty
             Taken -> if nrOfTakens >= 4 then Empty else Taken
 
-fix :: Eq a => (a -> a) -> a -> a
-fix f a = if a == f a then a else fix f (f a)
-
 partA :: Input -> OutputA
-partA = length . Map.filter (== Taken) . fix step
+partA = length . Map.filter (== Taken) . U.fix step
 
 ------------ PART B ------------
 getDirections :: (Int, Int) -> Input -> [[(Int, Int)]]
@@ -76,7 +73,7 @@ getDirections (x,y) i = [northWest, north, northEast, east, southEast, south, so
         west      = [(c, y) | c <- reverse [0..x-1]]
 
 getFirstSeat :: [(Int, Int)] -> Input -> Maybe Tile
-getFirstSeat xs i = listToMaybe $ filter (/= Floor) $ mapMaybe (`Map.lookup` i) xs
+getFirstSeat xs i = find (/= Floor) (mapMaybe (`Map.lookup` i) xs)
 
 getDirectionsFirstSeats :: (Int, Int) -> Input -> [Maybe Tile]
 getDirectionsFirstSeats c i = map (`getFirstSeat` i) (getDirections c i)
@@ -97,11 +94,11 @@ printInput :: Input -> String
 printInput i = unlines $ map line [0..maxY]
   where maxX = maximum (map fst $ Map.keys i)
         maxY = maximum (map snd $ Map.keys i)
-        line y = map (printTile . (`Map.lookup` i) . (,y)) [0..maxX] 
+        line y = map (printTile . (`Map.lookup` i) . (,y)) [0..maxX]
         printTile (Just Floor) = '.'
         printTile (Just Empty) = 'L'
         printTile (Just Taken) = '#'
         printTile Nothing      = '☐'
 
 partB :: Input -> OutputB
-partB = length . Map.filter (== Taken) . fix stepB
+partB = length . Map.filter (== Taken) . U.fix stepB
