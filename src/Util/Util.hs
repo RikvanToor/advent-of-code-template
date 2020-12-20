@@ -3,6 +3,7 @@ module Util.Util where
 {- ORMOLU_DISABLE -}
 import Control.Applicative ((<|>))
 import Data.Map.Strict (Map)
+import Data.Ord (comparing)
 import qualified Data.Map.Strict as Map
 import Data.Attoparsec.Text hiding (take)
 {- ORMOLU_ENABLE -}
@@ -47,6 +48,12 @@ mapParser f =
     . concat
     . zipWith (\y -> map (\(x, c) -> ((x, y), c))) [0..]
     <$> manyTill row endOfInput
+
+printMap :: (a -> Char) -> Map (Int, Int) a -> String
+printMap f m =
+  let maxX = maximum (map fst (Map.keys m))
+      maxY = maximum (map snd (Map.keys m))
+  in unlines $ map (\y -> map (\x -> maybe ' ' f $ Map.lookup (x,y) m) [0..maxX]) [0..maxY]
 
 fst3 :: (a,b,c) -> a
 fst3 (a,_,_) = a
