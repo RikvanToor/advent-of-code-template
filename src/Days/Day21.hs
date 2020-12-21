@@ -1,39 +1,69 @@
-module Days.Day21 (runDay) where
+module Days.Day21 where
 
-{- ORMOLU_DISABLE -}
-import Data.List
-import Data.Map.Strict (Map)
+import Data.Bifunctor                   ( bimap )
+import Data.List                        ( intercalate, sortOn )
+import Data.Map.Strict                  ( Map )
 import qualified Data.Map.Strict as Map
-import Data.Maybe
-import Data.Set (Set)
+import Data.Set                         ( Set )
 import qualified Data.Set as Set
-import Data.Vector (Vector)
-import qualified Data.Vector as Vec
 import qualified Util.Util as U
 
-import qualified Program.RunDay as R (runDay)
+import qualified Program.RunDay as R    ( runDay )
 import Data.Attoparsec.Text
-import Data.Void
-{- ORMOLU_ENABLE -}
 
 runDay :: Bool -> String -> IO ()
 runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = error "Not implemented yet!"
+inputParser =
+  ( bimap Set.fromList Set.fromList
+      <$> ( (,)
+              <$> many1 letter `sepBy` space
+              <* string " (contains "
+              <*> many1 letter `sepBy` string ", "
+              <* char ')'
+          )
+  )
+    `sepBy` endOfLine
 
 ------------ TYPES ------------
-type Input = Void
+type Input = [(Set String, Set String)]
 
-type OutputA = Void
+type OutputA = Int
 
-type OutputB = Void
+type OutputB = String
 
 ------------ PART A ------------
+getCandidatesPerAllergen :: Input -> Map String (Set String)
+getCandidatesPerAllergen =
+  fmap (foldr1 Set.intersection)
+    . Map.fromListWith (<>)
+    . concatMap (\(is, as) -> [(a, [is]) | a <- Set.toList as])
+
+getUnsafeIngredients :: Input -> Set String
+getUnsafeIngredients =
+  Set.unions
+    . Map.elems
+    . getCandidatesPerAllergen
+
 partA :: Input -> OutputA
-partA = error "Not implemented yet!"
+partA i =
+  let unsafe = getUnsafeIngredients i
+   in sum $ map (length . (`Set.difference` unsafe) . fst) i
 
 ------------ PART B ------------
+step :: Map String (Set String) -> Map String (Set String)
+step m =
+  let definites = Map.elems $ Map.filter ((== 1) . length) m
+   in fmap (\ss -> if length ss > 1 then foldl Set.difference ss definites else ss) m
+
 partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+partB i =
+  intercalate "," $
+    map snd $
+      sortOn fst $
+        map (fmap (head . Set.toList)) $
+          Map.toList (U.fix step unsafe)
+  where
+    unsafe = getCandidatesPerAllergen i
