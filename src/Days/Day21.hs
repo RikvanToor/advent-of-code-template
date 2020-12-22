@@ -1,4 +1,4 @@
-module Days.Day21 where
+module Days.Day21 (runDay) where
 
 import Data.Bifunctor                   ( bimap )
 import Data.List                        ( intercalate, sortOn )
