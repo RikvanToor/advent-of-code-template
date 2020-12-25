@@ -1,39 +1,32 @@
 module Days.Day25 (runDay) where
 
-{- ORMOLU_DISABLE -}
-import Data.List
-import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
-import Data.Maybe
-import Data.Set (Set)
-import qualified Data.Set as Set
-import Data.Vector (Vector)
-import qualified Data.Vector as Vec
-import qualified Util.Util as U
-
-import qualified Program.RunDay as R (runDay)
+import Data.List                     ( elemIndex )
+import qualified Program.RunDay as R ( runDay )
 import Data.Attoparsec.Text
-import Data.Void
-{- ORMOLU_ENABLE -}
 
 runDay :: Bool -> String -> IO ()
 runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = error "Not implemented yet!"
+inputParser = (,) <$> decimal <* space <*> decimal
 
 ------------ TYPES ------------
-type Input = Void
+type Input = (Int, Int)
 
-type OutputA = Void
+type OutputA = Maybe Int
 
-type OutputB = Void
+type OutputB = String
 
 ------------ PART A ------------
+transform :: Int -> Int -> Int
+transform subj val = (val*subj) `mod` 20201227
+
 partA :: Input -> OutputA
-partA = error "Not implemented yet!"
+partA (pubK1,pubK2) = do
+  loop1 <- elemIndex pubK1 $ iterate (transform 7) 1
+  return $ iterate (transform pubK2) 1 !! loop1
 
 ------------ PART B ------------
 partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+partB = const "DONE!"
