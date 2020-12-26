@@ -5,7 +5,6 @@ import           Data.Char            ( isDigit )
 import           Data.List as List
 import           Data.Map.Strict      ( Map, (!?) )
 import qualified Data.Map.Strict as Map
-import           Data.Maybe
 import           Text.Read            ( readMaybe )
 
 import qualified Program.RunDay as R (runDay)
@@ -36,7 +35,7 @@ partA i =
 
 ------------ PART B ------------
 checkRecord :: Map String String -> Bool
-checkRecord m = fromMaybe False $ do
+checkRecord m = (Just True ==) $ do
   byr <- m !? "byr"
   byrI <- readMaybe byr :: Maybe Int
   let byrValid = length byr == 4 && byrI >= 1920 && byrI <= 2002

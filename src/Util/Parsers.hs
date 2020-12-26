@@ -18,8 +18,8 @@ coordinateParser mapper start = coordinateParser' start start
         -- First we look for a line break, and we reset the coordinates appropriately
         [ endOfLine >> coordinateParser' start (y + 1),
           -- Then we look for a character, and map it
-          anyChar >>= (\c -> addToMap mapper x y c <$> coordinateParser' (x + 1) y),
+          anyChar >>= (\c -> addToMap x y c <$> coordinateParser' (x + 1) y),
           -- Catches the EOF
           return Map.empty
         ]
-    addToMap mapper x y c = Map.alter (const (mapper c)) (x, y)
+    addToMap x y c = Map.alter (const (mapper c)) (x, y)

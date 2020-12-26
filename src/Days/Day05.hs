@@ -1,7 +1,7 @@
 module Days.Day05 (runDay) where
 
 import           Control.Applicative  ( (<|>) )
-import           Data.Maybe           ( listToMaybe )
+import           Data.List            ( find )
 import qualified Program.RunDay as R  ( runDay )
 import           Data.Attoparsec.Text
 
@@ -40,4 +40,4 @@ partA = maximum
 partB :: Input -> OutputB
 partB ids =
   let allOpts = [minimum ids..maximum ids]
-  in listToMaybe $ filter (not . (`elem` ids)) allOpts
+  in find (not . (`elem` ids)) allOpts

@@ -3,7 +3,6 @@ module Util.Util where
 {- ORMOLU_DISABLE -}
 import Control.Applicative ((<|>))
 import Data.Map.Strict (Map)
-import Data.Ord (comparing)
 import qualified Data.Map.Strict as Map
 import Data.Attoparsec.Text hiding (take)
 {- ORMOLU_ENABLE -}
@@ -27,7 +26,7 @@ mapFromNestedLists = Map.fromList . attachCoords 0 0
   where
     attachCoords _ _ [] = []
     attachCoords x _ ([] : ls) = attachCoords (x + 1) 0 ls
-    attachCoords x y ((l : ls) : lss) = ((x, y), l) : (attachCoords x (y + 1) (ls : lss))
+    attachCoords x y ((l : ls) : lss) = ((x, y), l) : attachCoords x (y + 1) (ls : lss)
 
 -- Splits a list into chunks of the specified size.
 -- The final chunk may be smaller than the chunk size.
@@ -36,7 +35,7 @@ chunksOf :: Int -> [a] -> [[a]]
 chunksOf n ls
   | n <= 0 = error "Cannot split into chunks of negative length."
   | length ls < n = [ls]
-  | otherwise = (take n ls) : (chunksOf n (drop n ls))
+  | otherwise = take n ls : chunksOf n (drop n ls)
 
 fix :: Eq a => (a -> a) -> a -> a
 fix f a = if a == f a then a else fix f (f a)
