@@ -41,6 +41,9 @@ chunksOf n ls
 fix :: Eq a => (a -> a) -> a -> a
 fix f a = if a == f a then a else fix f (f a)
 
+tupAdd :: Num a => (a, a) -> (a, a) -> (a, a)
+tupAdd (a,b) (c,d) = (a+c,b+d)
+
 mapParser :: (Char -> a) -> Parser (Map (Int, Int) a)
 mapParser f =
   let row = zip [0..] <$> manyTill (f <$> anyChar) (endOfLine <|> endOfInput)
